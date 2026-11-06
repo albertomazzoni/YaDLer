@@ -2946,7 +2946,7 @@ button.primary:hover { background: var(--te-orange-dark); }
      const descEl = h('div', 'promo-subtitle', descText);
      
      // ДИСКЛЕЙМЕР (Новое поле)
-     const disclaimer = h('div', 'promo-disclaimer', '👀 Музыкальные ссылки ведут к автору треков, а не к разработчику скрипта. Баги и вопросы по программе — только в GitHub Issues.');
+     const disclaimer = h('div', 'promo-disclaimer', 'ДИСКЛЕЙМЕР 👀 Музыкальные ссылки ведут к автору треков, а не к разработчику скрипта. Мне лично ничего не нужно, а поддержать артиста на запись нового альбома можно кнопкой ниже. Баги и вопросы по программе — только в GitHub Issues. Закрыть окно можно на крестик [×] справа.');
      
      // Стили для дисклеймера (добавьте их в CSS или инлайн)
      disclaimer.style.cssText = `
