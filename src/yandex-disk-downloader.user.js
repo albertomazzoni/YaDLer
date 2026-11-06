@@ -2930,25 +2930,70 @@ button.primary:hover { background: var(--te-orange-dark); }
     let promoHiddenNow = false;
     const promoHidden = () => promoHiddenNow;
     function buildPromo() {
-        if (!PROMO || !PROMO.enabled) return null;
-        const box = h('div', 'promo');
-        const header = h('div', 'promo-header');
-        const titleWrap = h('div', 'promo-title-wrap');
-        titleWrap.append(h('div', 'promo-title', 'Поддержать автора'), h('div', 'promo-subtitle', PROMO.album ? `Пока файлы скачиваются — послушайте «${PROMO.album}»` : 'Пока файлы скачиваются — послушайте музыку:'));
-        const closeBtn = h('button', 'promo-close', '×');
-        closeBtn.title = 'Скрыть';
-        closeBtn.setAttribute('aria-label', 'Скрыть блок');
-        closeBtn.addEventListener('click', () => { box.hidden = true; promoHiddenNow = true; });
-        header.append(titleWrap, closeBtn);
-        const listenSection = h('div', 'promo-section');
-        listenSection.append(h('div', 'promo-label', 'Слушать'), chipsRow(PROMO.listen));
-        const parts = [header, listenSection];
-        if (PROMO.social && PROMO.social.length) { parts.push(h('div', 'promo-divider')); const s = h('div', 'promo-section'); s.append(h('div', 'promo-label', 'Подписаться'), chipsRow(PROMO.social)); parts.push(s); }
-        if (PROMO.donate) { parts.push(h('div', 'promo-divider')); const s = h('div', 'promo-section'); const r = h('div', 'chips'); const d = chip(PROMO.donate[0], PROMO.donate[1], 'accent full'); if (d) r.append(d); s.append(r); parts.push(s); }
-        box.append(...parts);
-        box.hidden = promoHidden();
-        return box;
-    }
+     if (!PROMO || !PROMO.enabled) return null;
+     const box = h('div', 'promo');
+     const header = h('div', 'promo-header');
+     const titleWrap = h('div', 'promo-title-wrap');
+     
+     // Основной заголовок
+     const mainTitle = h('div', 'promo-title', 'Поддержи проект музыкой');
+     
+     // Текст с описанием альбома
+     let descText = PROMO.album 
+         ? `Пока файлы скачиваются — послушайте «${PROMO.album}»` 
+         : 'Пока файлы скачиваются — послушайте музыку. Это тоже бесплатно!';
+         
+     const descEl = h('div', 'promo-subtitle', descText);
+     
+     // ДИСКЛЕЙМЕР (Новое поле)
+     const disclaimer = h('div', 'promo-disclaimer', '👀 Музыкальные ссылки ведут к автору треков, а не к разработчику скрипта. Баги и вопросы по программе — только в GitHub Issues.');
+     
+     // Стили для дисклеймера (добавьте их в CSS или инлайн)
+     disclaimer.style.cssText = `
+        margin-top: 6px;
+        font-size: calc(var(--fs) * 0.8);
+        color: var(--text-muted);
+        line-height: 1.3;
+        border-top: 1px solid var(--separator);
+        padding-top: 6px;
+        opacity: 0.9;
+     `;
+     
+     titleWrap.append(mainTitle, descEl, disclaimer);
+     
+     const closeBtn = h('button', 'promo-close', '×');
+     closeBtn.title = 'Скрыть';
+     closeBtn.setAttribute('aria-label', 'Скрыть блок');
+     closeBtn.addEventListener('click', () => { box.hidden = true; promoHiddenNow = true; });
+     
+     header.append(titleWrap, closeBtn);
+     
+     const listenSection = h('div', 'promo-section');
+     listenSection.append(h('div', 'promo-label', 'Слушать'), chipsRow(PROMO.listen));
+     
+     const parts = [header, listenSection];
+     
+     if (PROMO.social && PROMO.social.length) { 
+         parts.push(h('div', 'promo-divider')); 
+         const s = h('div', 'promo-section'); 
+         s.append(h('div', 'promo-label', 'Подписаться на музыканта'), chipsRow(PROMO.social)); 
+         parts.push(s); 
+     }
+     
+     if (PROMO.donate) { 
+         parts.push(h('div', 'promo-divider')); 
+         const s = h('div', 'promo-section'); 
+         const r = h('div', 'chips'); 
+         const d = chip(PROMO.donate[0], PROMO.donate[1], 'accent full'); 
+         if (d) r.append(d); 
+         s.append(r); 
+         parts.push(s); 
+     }
+     
+     box.append(...parts);
+     box.hidden = promoHidden();
+     return box;
+ }
     function showThanks() { if (!PROMO || !PROMO.enabled || !ui.thanks || promoHidden()) return; const wrap = h('div', 'thanks'); wrap.append(h('div', 'thanks-text', 'Готово. Понравился скрипт — поддержите автора прослушиванием!'), chipsRow(PROMO.listen)); ui.thanks.replaceChildren(wrap); ui.thanks.hidden = false; }
     /* --- тема, шрифт, степпер, подсказки, скроллбар, вид --- */
     const mediaDark = (typeof window.matchMedia === 'function') ? window.matchMedia('(prefers-color-scheme: dark)') : null;
