@@ -1,0 +1,78 @@
+name: Build and Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: Install obfuscator
+        run: npm install javascript-obfuscator
+      
+      - name: Create dist directory
+        run: mkdir -p dist
+      
+      - name: Obfuscate script
+        run: |
+          node -e "
+            const JavaScriptObfuscator = require('javascript-obfuscator');
+            const fs = require('fs');
+            const code = fs.readFileSync('src/yandex-disk-downloader.user.js', 'utf8');
+            const metaStart = '// ==UserScript==';
+            const metaEnd = '// ==/UserScript==';
+            const s = code.indexOf(metaStart);
+            const e = code.indexOf(metaEnd);
+            if (s === -1 || e === -1) throw new Error('Metadata block not found in source');
+            const meta = code.slice(s, e + metaEnd.length);
+            const body = code.slice(e + metaEnd.length);
+            const result = JavaScriptObfuscator.obfuscate(body, {
+              compact: true,
+              controlFlowFlattening: true,
+              controlFlowFlatteningThreshold: 0.75,
+              deadCodeInjection: true,
+              deadCodeInjectionThreshold: 0.4,
+              identifierNamesGenerator: 'hexadecimal',
+              numbersToExpressions: true,
+              selfDefending: true,
+              stringArray: true,
+              stringArrayEncoding: ['rc4'],
+              stringArrayThreshold: 0.75,
+              target: 'browser',
+              transformObjectKeys: true
+            });
+            fs.writeFileSync('dist/yandex-disk-downloader.user.js', meta + '\n' + result.getObfuscatedCode());
+          "
+      
+      - name: Copy promo.json
+        run: cp config/promo.json dist/promo.json
+      
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./dist
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
