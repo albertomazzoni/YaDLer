@@ -1,0 +1,14 @@
+{
+  "listen": [
+    ["Spotify", "https://open.spotify.com/artist/7xHPXVFOkJT98QLw52WQ1B"],
+    ["Яндекс Музыка", "https://music.yandex.ru/artist/16666146"],
+    ["YouTube Music", "https://music.youtube.com/@MiraAlbor"],
+    ["Apple Music", "https://music.apple.com/us/artist/mira-albor/1623270295"]
+  ],
+  "donate": ["Поддержать автора", "https://boosty.to/"],
+  "social": [
+    ["Instagram", "https://www.instagram.com/miraalbor"],
+    ["YouTube", "https://www.youtube.com/@MiraAlbor"],
+    ["VK", "vk.ru/miraalbor_official"]
+  ]
+}
